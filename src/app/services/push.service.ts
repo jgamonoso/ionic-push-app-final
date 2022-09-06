@@ -35,7 +35,7 @@ export class PushService {
 
   async configuracionInicial() {
 
-    this.oneSignal.startInit('7486cc4f-39de-48fc-92b0-2006ecc42c5d', '724850718319');
+    this.oneSignal.startInit('d15a929c-3e22-4ca9-961f-88bc72660cd9', '1034621484768');
 
     this.oneSignal.inFocusDisplaying( this.oneSignal.OSInFocusDisplayOption.Notification );
 
