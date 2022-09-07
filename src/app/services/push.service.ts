@@ -2,12 +2,10 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { OneSignal, OSNotification, OSNotificationPayload } from '@ionic-native/onesignal/ngx';
 import { Storage } from '@ionic/storage';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class PushService {
-
   mensajes: OSNotificationPayload[] = [
     // {
     //   title: 'Titulo de la push',
@@ -20,11 +18,10 @@ export class PushService {
 
   pushListener = new EventEmitter<OSNotificationPayload>();
 
-
-
-  constructor( private oneSignal: OneSignal,
-               private storage: Storage ) {
-
+  constructor(
+    private oneSignal: OneSignal,
+    private storage: Storage
+  ) {
     this.cargarMensajes();
   }
 
@@ -34,32 +31,29 @@ export class PushService {
   }
 
   async configuracionInicial() {
-
     this.oneSignal.startInit('d15a929c-3e22-4ca9-961f-88bc72660cd9', '1034621484768');
 
     this.oneSignal.inFocusDisplaying( this.oneSignal.OSInFocusDisplayOption.Notification );
 
-    this.oneSignal.handleNotificationReceived().subscribe( ( noti ) => {
-    // do something when notification is received
-    console.log('Notificación recibida', noti );
-    this.notificacionRecibida( noti );
+    this.oneSignal.handleNotificationReceived().subscribe((noti) => {
+      // do something when notification is received
+      console.log('Notificación recibida', noti);
+      this.notificacionRecibida(noti);
     });
 
-    this.oneSignal.handleNotificationOpened().subscribe( async( noti ) => {
+    this.oneSignal.handleNotificationOpened().subscribe(async (noti) => {
       // do something when a notification is opened
-      console.log('Notificación abierta', noti );
-      await this.notificacionRecibida( noti.notification );
+      console.log('Notificación abierta', noti);
+      await this.notificacionRecibida(noti.notification);
     });
-
 
     // Obtener ID del suscriptor
     this.oneSignal.getIds().then( info => {
-      this.userId = info.userId || 'bb4c4088-3427-44ff-8380-570aa6c1ce1a';
+      this.userId = info.userId || '955741c1-9ab9-4d15-9476-4ef9cee4ca5b';
       console.log(this.userId);
     });
 
     this.oneSignal.endInit();
-
   }
 
   async getUserIdOneSignal() {
@@ -70,35 +64,32 @@ export class PushService {
     return info.userId;
   }
 
-  async notificacionRecibida( noti: OSNotification ) {
-
+  async notificacionRecibida(noti: OSNotification) {
     await this.cargarMensajes();
 
     const payload = noti.payload;
 
     const existePush = this.mensajes.find( mensaje => mensaje.notificationID === payload.notificationID );
 
-    if ( existePush ) {
+    if (existePush) {
       return;
     }
 
-    this.mensajes.unshift( payload );
-    this.pushListener.emit( payload );
+    this.mensajes.unshift(payload);
+    this.pushListener.emit(payload);
 
     await this.guardarMensajes();
-
   }
 
   guardarMensajes() {
-    this.storage.set('mensajes', this.mensajes );
+    this.storage.set('mensajes', this.mensajes);
   }
 
   async cargarMensajes() {
 
-    this.mensajes =  await this.storage.get('mensajes') || [];
+    this.mensajes = await this.storage.get('mensajes') || [];
 
     return this.mensajes;
-
   }
 
   async borrarMensajes() {
@@ -106,5 +97,4 @@ export class PushService {
     this.mensajes = [];
     this.guardarMensajes();
   }
-
 }
